@@ -1,0 +1,18 @@
+{
+  "name": "jrosalessueiro/tarea8",
+  "description": "Proyecto StockMaster - Uso de API REST Alpha Vantage",
+  "authors": [
+    {
+      "name": "jrosalessueiro",
+      "email": "pepinhos@yahoo.es"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "jrosalessueiro\\Tarea8\\": "src/"
+    }
+  },
+  "require": {
+    "kimsunbin/jquery4php": "*"
+  }
+}
