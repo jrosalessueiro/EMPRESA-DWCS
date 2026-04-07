@@ -12,7 +12,5 @@
       "jrosalessueiro\\Tarea8\\": "src/"
     }
   },
-  "require": {
-    "kimsunbin/jquery4php": "*"
-  }
+  "require": {}
 }
