@@ -1,3 +1,11 @@
+¡Para nada! No borres tu archivo actual, que ya tiene toda la estructura de Bootstrap y la lógica de sesión. Lo que vamos a hacer es insertar las nuevas funcionalidades dentro de lo que ya tienes.
+
+He fusionado ambos fragmentos para que tu listado.php quede completo y con el buscador "inteligente".
+
+public/listado.php (Código fusionado y completo)
+Copia este código y sustituye todo el contenido de tu listado.php actual:
+
+PHP
 <?php
 session_start();
 if (!isset($_SESSION['nombre'])) {
@@ -17,9 +25,10 @@ $error = "";
 if (isset($_POST['enviar'])) {
     $simbolo = trim($_POST['simbolo']);
     if (!empty($simbolo)) {
+        // Intentamos obtener el precio directamente
         $resultado = $service->consultar($simbolo);
         if (!$resultado) {
-            $error = "No se encontraron datos para: " . htmlspecialchars($simbolo);
+            $error = "No se encontraron datos exactos para: " . htmlspecialchars($simbolo) . ". Prueba a seleccionar una sugerencia del desplegable.";
         }
     }
 }
@@ -28,7 +37,6 @@ if (isset($_POST['enviar'])) {
 if (isset($_POST['comprar'])) {
     $id = $_POST['id'];
     $precio = $_POST['precio'];
-    // Guardamos en la sesión: Ticker => Precio
     $_SESSION['cesta'][$id] = $precio;
 }
 ?>
@@ -55,16 +63,32 @@ if (isset($_POST['comprar'])) {
         <div class="row">
             <div class="col-md-12 text-center mb-4">
                 <h2>Buscador de Inversiones en Tiempo Real</h2>
-                <p class="text-muted">Consulta la cotización actual de cualquier empresa en bolsa</p>
+                <p class="text-muted">Escribe el nombre de la empresa para ver sugerencias o el símbolo exacto.</p>
             </div>
         </div>
 
         <div class="card p-4 shadow-sm mb-4">
             <form action="" method="POST" class="form-inline justify-content-center">
-                <input type="text" name="simbolo" class="form-control form-control-lg mr-2 w-50" placeholder="Ej: AAPL, TSLA, MSFT..." required>
+                <input type="text" name="simbolo" list="opciones_bolsa" class="form-control form-control-lg mr-2 w-50"
+                    placeholder="Ej: Apple, Microsoft, AAPL..." required
+                    value="<?php echo isset($_POST['simbolo']) ? htmlspecialchars($_POST['simbolo']) : ''; ?>">
+
+                <datalist id="opciones_bolsa">
+                    <?php
+                    // Si el usuario ha escrito algo, pedimos sugerencias a la API
+                    if (isset($_POST['simbolo']) && !empty($_POST['simbolo'])) {
+                        $sugerencias = $service->buscarSugerencias($_POST['simbolo']);
+                        foreach ($sugerencias as $item) {
+                            echo "<option value='" . $item['1. symbol'] . "'>" . $item['2. name'] . " (" . $item['4. region'] . ")</option>";
+                        }
+                    }
+                    ?>
+                </datalist>
+
                 <button type="submit" name="enviar" class="btn btn-primary btn-lg">Consultar API</button>
                 <a href="cesta.php" class="btn btn-success btn-lg ml-2"><i class="fas fa-wallet"></i> Mi Cartera</a>
             </form>
+            <small class="text-muted text-center mt-2">Pista: Escribe un nombre, pulsa Consultar y luego elige el símbolo del desplegable.</small>
         </div>
 
         <?php if ($error): ?>

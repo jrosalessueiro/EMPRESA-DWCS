@@ -35,4 +35,17 @@ class StockService
         }
         return null;
     }
+
+    public function buscarSugerencias($palabra)
+    {
+        $palabra = urlencode($palabra);
+        $url = "{$this->baseUrl}?function=SYMBOL_SEARCH&keywords={$palabra}&apikey={$this->apiKey}";
+
+        $json = @file_get_contents($url, false, stream_context_create([
+            "ssl" => ["verify_peer" => false, "verify_peer_name" => false]
+        ]));
+
+        $datos = json_decode($json, true);
+        return $datos['bestMatches'] ?? [];
+    }
 }
