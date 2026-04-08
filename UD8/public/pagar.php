@@ -1,10 +1,19 @@
 <?php
+// Iniciamos sesión para poder manipular la "cesta" del usuario
 session_start();
+
+// Control de seguridad: Si no hay sesión iniciada, redirigimos al login
 if (!isset($_SESSION['nombre'])) {
     header('Location:login.php');
     exit();
 }
-// Vaciamos la cartera tras "pagar"
+
+/**
+ * GESTIÓN DE VARIABLES DE SESIÓN:
+ * Usamos unset() para borrar específicamente la clave 'cesta'.
+ * Solo queremos vaciar el carrito 
+ * simulando que la transacción se ha completado.
+ */
 unset($_SESSION['cesta']);
 ?>
 <!doctype html>
@@ -16,7 +25,6 @@ unset($_SESSION['cesta']);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body class="bg-light">

@@ -1,22 +1,31 @@
 <?php
+// Iniciamos sesión para verificar que el usuario está autenticado
 session_start();
 if (!isset($_SESSION['nombre'])) {
     header('Location:login.php');
     exit();
 }
 
+// Requerimos el autoload de Composer para cargar automáticamente nuestras clases
+// El __DIR__ nos asegura que la ruta sea absoluta desde el directorio actual
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// Importamos la clase del servicio mediante su Namespace
 use jrosalessueiro\Tarea8\StockService;
 
+// Instanciamos el servicio que conecta con la API externa
 $service = new StockService();
 $datos = null;
 
-// Importante: listado.php envía el parámetro como 'id'
+/**
+ * CAPTURA DE DATOS POR GET: 
+ * Recuperamos el 'id' enviado desde listado.php o cesta.php a través de la URL.
+ * Usamos el operador de fusión de nulidad (??) para evitar errores si no existe.
+ */
 $simbolo = $_GET['id'] ?? null;
 
 if ($simbolo) {
-    // Llamamos al servicio (asegúrate de que el método se llame consultar)
+    // Limpiamos espacios en blanco y consultamos los datos financieros del símbolo
     $datos = $service->consultar(trim($simbolo));
 }
 ?>
@@ -57,7 +66,11 @@ if ($simbolo) {
             </div>
 
             <div class="card-body">
-                <?php if ($datos && isset($datos['simbolo'])): ?>
+                <?php
+                /* RENDERIZADO:
+                   Si el servicio devolvió datos válidos, pintamos la lista de detalles.
+                   Usamos htmlspecialchars por seguridad para evitar ataques XSS al imprimir datos de la API. */
+                if ($datos && isset($datos['simbolo'])): ?>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item bg-transparent text-white d-flex justify-content-between border-secondary">
                             <strong>Símbolo:</strong>

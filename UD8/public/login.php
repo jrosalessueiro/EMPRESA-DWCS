@@ -1,38 +1,64 @@
 <?php
+// Iniciamos la sesión al principio para poder guardar el nombre del usuario si el login es correcto
 session_start();
-// 1. Cargamos la conexión y el autoload de clases
+
+// Incluimos el script de conexión que usa PDO
 require_once 'conexion.php';
-require_once __DIR__ . '/../vendor/autoload.php';
 
 $error = "";
 
+/**
+ * PROCESAMIENTO DEL FORMULARIO:
+ * Verificamos si el usuario ha pulsado el botón de enviar (método POST).
+ */
 if (isset($_POST['login'])) {
     $usuario = trim($_POST['usuario']);
-    $pass = $_POST['pass'];
+    $password = $_POST['password'];
 
-    // --- LÓGICA DE VALIDACIÓN ---
-    // Consultamos si el usuario existe en la tabla 'usuarios'
-    $consulta = "SELECT pass FROM usuarios WHERE usuario = :u";
-    $stmt = $conProyecto->prepare($consulta);
+    // Validación básica: comprobamos que los campos no lleguen vacíos
+    if (empty($usuario) || empty($password)) {
+        $error = "Por favor, rellena todos los campos.";
+    } else {
+        try {
+            /* *Si concatenamos variables directas en el SQL la app no seria segura.
+             * * 2. La solución: 
+             * - Paso A ($sql): Creamos una "plantilla" con un marcador (:u). Es un hueco vacío.
+             * - Paso B (prepare): Enviamos la plantilla a la BD. La BD ya sabe qué "forma" tiene la orden.
+             * - Paso C (execute): Enviamos el dato real ($usuario). PDO lo limpia de cualquier código 
+             *  antes de meterlo en el hueco (:u). 
+             * * 3. El resultado ($row): Obtenemos los datos de forma segura.. */
 
-    try {
-        $stmt->execute([':u' => $usuario]);
-        $fila = $stmt->fetch(PDO::FETCH_OBJ);
+            // Definimos la plantilla con el marcador :u
+            $sql = "SELECT nombre, password FROM usuarios WHERE usuario = :u";
+            // Preparamos la consulta en el servidor de BD
+            $stmt = $conProyecto->prepare($sql);
+            // Ejecutamos pasando el valor real que limpia el marcador
+            $stmt->execute([':u' => $usuario]);
+            // Recuperamos la fila como un array asociativo (clave => valor)
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($fila) {
+            /**
+             * VERIFICACIÓN DE CREDENCIALES:
+             * Comprobamos si el usuario existe y si la contraseña coincide.
+             * Si usasemos password_hash() en el registro, aquí usaríamos password_verify().
+             */
+            if ($row && $password === $row['password']) {
+                // ÉXITO: Guardamos datos en la sesión para identificar al usuario en otras páginas
+                $_SESSION['nombre'] = $row['nombre'];
+                $_SESSION['cesta'] = []; // Inicializamos la cartera vacía para el nuevo usuario
 
-            if (password_verify($pass, $fila->pass) || $pass == $fila->pass) {
-                $_SESSION['nombre'] = $usuario;
+                // Redirigimos al terminal principal
                 header('Location: listado.php');
                 exit();
             } else {
-                $error = "Contraseña incorrecta.";
+                $error = "Usuario o contraseña incorrectos.";
             }
-        } else {
-            $error = "El usuario no existe.";
+        } catch (PDOException $ex) {
+            $error = "Error en el sistema: " . $ex->getMessage();
+        } finally {
+            // Cerramos la conexión usando la función auxiliar de conexion.php
+            cerrar($conProyecto);
         }
-    } catch (PDOException $ex) {
-        $error = "Error en la base de datos: " . $ex->getMessage();
     }
 }
 ?>
@@ -41,45 +67,54 @@ if (isset($_POST['login'])) {
 
 <head>
     <meta charset="UTF-8">
-    <title>StockMaster - Login</title>
+    <title>StockMaster Pro | Acceso</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #343a40;
-            color: white;
+            background: linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.9)),
+                url('../img/Captura.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
         }
 
-        .card {
-            color: black;
+        .login-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: white;
         }
     </style>
 </head>
 
 <body>
-    <div class="container mt-5">
-        <div class="card mx-auto shadow-lg" style="max-width: 400px;">
-            <div class="card-header bg-primary text-white text-center">
-                <h4><i class="fas fa-chart-line"></i> StockMaster Login</h4>
-            </div>
-            <div class="card-body">
-                <?php if ($error): ?>
-                    <div class="alert alert-danger"><?php echo $error; ?></div>
-                <?php endif; ?>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card login-card shadow-lg p-4">
+                    <div class="text-center mb-4">
+                        <h2 class="font-weight-bold text-info">STOCKMASTER</h2>
+                        <p class="text-muted">Inicia sesión para operar</p>
+                    </div>
 
-                <form method="POST" action="">
-                    <div class="form-group">
-                        <label>Usuario (gestor)</label>
-                        <input type="text" name="usuario" class="form-control" placeholder="Introduce tu usuario" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Contraseña (secreto)</label>
-                        <input type="password" name="pass" class="form-control" placeholder="Introduce tu clave" required>
-                    </div>
-                    <button type="submit" name="login" class="btn btn-primary btn-block">Entrar al Panel</button>
-                </form>
-            </div>
-            <div class="card-footer text-muted text-center">
-                <small>DWCS - Tarea 08</small>
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger py-2 text-center small"><?php echo $error; ?></div>
+                    <?php endif; ?>
+
+                    <form action="login.php" method="POST">
+                        <div class="form-group">
+                            <label>Usuario</label>
+                            <input type="text" name="usuario" class="form-control bg-dark border-secondary text-white" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Contraseña</label>
+                            <input type="password" name="password" class="form-control bg-dark border-secondary text-white" required>
+                        </div>
+                        <button type="submit" name="login" class="btn btn-info btn-block font-weight-bold mt-4">ACCEDER AL TERMINAL</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

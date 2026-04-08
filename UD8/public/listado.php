@@ -1,23 +1,38 @@
 <?php
+// Iniciamos sesión para saber quién es el usuario y manejar su cesta
 session_start();
+
+// Control de seguridad: Si no se ha logueado, lo mandamos de vuelta al login
 if (!isset($_SESSION['nombre'])) {
     header('Location:login.php');
     exit();
 }
+
+// Cargamos el Autoload de Composer para que reconozca las clases de nuestro Namespace
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// Importamos la clase del servicio que se encarga de la lógica de negocio con la API
 use jrosalessueiro\Tarea8\StockService;
 
+// Instanciamos el servicio y preparamos variables para la vista
 $service = new StockService();
 $resultado = null;
 $error = "";
 
+/**
+ * LÓGICA DE BÚSQUEDA:
+ * El usuario puede llegar aquí por POST (formulario) o por GET (desde las sugerencias JS).
+ * Usamos el operador ?? para priorizar el parámetro 'simbolo' del POST.
+ */
 $busqueda = $_POST['simbolo'] ?? $_GET['s'] ?? null;
 
 if ($busqueda) {
+    // Consultamos al servicio. El método 'consultar' encapsula la llamada a la API Alpha Vantage.
     $respuesta = $service->consultar(trim($busqueda));
 
-    // Si el servicio devuelve que es un límite, NO asignamos nada a $resultado
+    /* GESTIÓN DE ERRORES DEL SERVICIO:
+       Controlamos si la API ha llegado al límite de llamadas gratuitas (rate limit) 
+       o si simplemente no existen datos para ese ticker/símbolo. */
     if (isset($respuesta['tipo']) && $respuesta['tipo'] === 'limite') {
         $error = $respuesta['mensaje'];
         $resultado = null;
@@ -25,12 +40,17 @@ if ($busqueda) {
         $error = "No se encontraron datos para este símbolo.";
         $resultado = null;
     } else {
-        // Solo si todo va bien, $resultado tiene los datos
+        // Éxito: Guardamos la respuesta para pintarla luego en el HTML
         $resultado = $respuesta;
         $error = "";
     }
 }
 
+/**
+ * LÓGICA DE COMPRA (Añadir a la Cartera):
+ * Si se pulsa el botón 'comprar', guardamos el precio en el array de sesión 'cesta'.
+ * Usamos el símbolo (id) como clave para evitar duplicados.
+ */
 if (isset($_POST['comprar'])) {
     $_SESSION['cesta'][$_POST['id']] = $_POST['precio'];
 }
@@ -44,6 +64,7 @@ if (isset($_POST['comprar'])) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --bg-dark: #020617;
@@ -53,19 +74,14 @@ if (isset($_POST['comprar'])) {
         }
 
         body {
-            background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.92)), url('../img/Captura.jpg');
+            background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.92)),
+                url('../img/Captura.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             color: #f1f5f9;
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
-        }
-
-        .navbar {
-            background: rgba(2, 6, 23, 0.9) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #1e293b;
         }
 
         .glass-container {
@@ -77,25 +93,11 @@ if (isset($_POST['comprar'])) {
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .form-control-lg {
-            background: rgba(15, 23, 42, 0.9) !important;
-            border: 1px solid #334155;
-            color: white !important;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-
-        .form-control-lg:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
-        }
-
         #menu-sugerencias {
             position: absolute;
             z-index: 1000;
             width: 100%;
             top: 100%;
-            left: 0;
             background: #1e293b;
             border: 1px solid var(--accent-blue);
             border-radius: 8px;
@@ -174,12 +176,7 @@ if (isset($_POST['comprar'])) {
 
             <?php if ($error): ?>
                 <div class="col-md-10 mt-4 animate__animated animate__headShake">
-                    <div class="alert text-center shadow-lg"
-                        style="background: rgba(239, 68, 68, 0.2); 
-                    backdrop-filter: blur(8px); 
-                    border: 1px solid #ef4444; 
-                    color: #fca5a5; 
-                    border-radius: 16px;">
+                    <div class="alert text-center shadow-lg" style="background: rgba(239, 68, 68, 0.2); backdrop-filter: blur(8px); border: 1px solid #ef4444; color: #fca5a5; border-radius: 16px;">
                         <i class="fas fa-exclamation-circle mb-2" style="font-size: 1.5rem;"></i>
                         <h5 class="font-weight-bold">AVISO DEL SISTEMA</h5>
                         <p class="mb-1"><?php echo $error; ?></p>
@@ -201,6 +198,7 @@ if (isset($_POST['comprar'])) {
                         </div>
 
                         <?php
+                        // Lógica visual: Comprobamos si el cambio es negativo para colorear en rojo o verde
                         $cambio = $resultado['cambio'] ?? '0%';
                         $esNegativo = (strpos($cambio, '-') !== false);
                         ?>
@@ -235,8 +233,9 @@ if (isset($_POST['comprar'])) {
                 return;
             }
 
-            // Debounce de 500ms para no agotar la API
+            // DEBOUNCE: Esperamos 500ms tras la última tecla para no saturar la API con peticiones
             timeout = setTimeout(() => {
+                // Llamamos a un script intermedio 'sugerencias.php' que habla con la API
                 fetch(`sugerencias.php?q=${encodeURIComponent(query)}`)
                     .then(res => res.json())
                     .then(data => {
@@ -247,6 +246,7 @@ if (isset($_POST['comprar'])) {
                                 const div = document.createElement('div');
                                 div.className = 'sugerencia-item';
                                 div.innerHTML = `<strong>${item['1. symbol']}</strong> - ${item['2. name']}`;
+                                // Al hacer clic, redirigimos usando GET para cargar los datos
                                 div.onclick = () => {
                                     window.location.href = `listado.php?s=${item['1. symbol']}`;
                                 };
@@ -258,6 +258,7 @@ if (isset($_POST['comprar'])) {
             }, 500);
         });
 
+        // NAVEGACIÓN POR TECLADO: Permitimos seleccionar sugerencias con las flechas y Enter
         buscador.addEventListener('keydown', function(e) {
             const items = menu.getElementsByClassName('sugerencia-item');
             if (menu.style.display === 'block') {

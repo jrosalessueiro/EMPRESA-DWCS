@@ -1,5 +1,9 @@
 <?php
+// Iniciamos la sesión para acceder a la "cesta" o cartera del usuario
 session_start();
+
+// Control de acceso: Si no existe la variable de sesión 'nombre' --> el usuario no ha pasado por el login 
+// lo redirigimos al login.
 if (!isset($_SESSION['nombre'])) {
     header('Location:login.php');
     exit();
@@ -13,6 +17,7 @@ if (!isset($_SESSION['nombre'])) {
     <title>StockMaster - Mi Cartera</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+
     <style>
         :root {
             --bg-dark: #020617;
@@ -23,7 +28,6 @@ if (!isset($_SESSION['nombre'])) {
         body {
             background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.92)),
                 url('../img/Captura.jpg');
-            /* Misma ruta que en listado */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -33,7 +37,6 @@ if (!isset($_SESSION['nombre'])) {
             margin: 0;
         }
 
-        /* Esto es lo que le da el toque de cristal a las tarjetas de la cesta y detalles */
         .glass-container,
         .card {
             background: var(--card-dark) !important;
@@ -45,7 +48,6 @@ if (!isset($_SESSION['nombre'])) {
             color: white !important;
         }
 
-        /* Para que las tablas de la cesta se vean bien */
         .table {
             color: white !important;
         }
@@ -66,8 +68,11 @@ if (!isset($_SESSION['nombre'])) {
                 <h4 class="mb-0"><i class="fas fa-briefcase mr-2"></i> Mi Cartera de Inversión</h4>
                 <a href="listado.php" class="btn btn-light btn-sm font-weight-bold">Volver al Buscador</a>
             </div>
+
             <div class="card-body">
-                <?php if (!isset($_SESSION['cesta']) || count($_SESSION['cesta']) == 0): ?>
+                <?php
+                /* Control de la cesta: verificamos si existe la cesta en la sesión o si está vacía */
+                if (!isset($_SESSION['cesta']) || count($_SESSION['cesta']) == 0): ?>
                     <div class="text-center p-5">
                         <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
                         <p class="lead">No tienes acciones en tu cartera todavía.</p>
@@ -84,28 +89,34 @@ if (!isset($_SESSION['nombre'])) {
                         </thead>
                         <tbody>
                             <?php
-                            $total = 0;
+                            $total = 0; // Acumulador para el valor total de la inversión
+
+                            /* Recorremos el array asociativo de la cesta:
+                               $simbolo es la clave que va a buscar en la API y $precio es el valor */
                             foreach ($_SESSION['cesta'] as $simbolo => $precio):
                                 $total += $precio;
                             ?>
                                 <tr>
                                     <td class="align-middle font-weight-bold"><?php echo $simbolo; ?></td>
                                     <td class="align-middle"><?php echo number_format($precio, 2); ?> $</td>
-                                    <<td>
+                                    <td class="text-center">
                                         <a href="detalles.php?id=<?php echo $simbolo; ?>" class="btn btn-sm btn-info">
                                             <i class="fas fa-eye"></i> Ver Detalles
                                         </a>
-                                        </td>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                         <tfoot>
                             <tr class="table-success">
                                 <td class="font-weight-bold h5">VALOR TOTAL DE LA CARTERA</td>
-                                <td colspan="2" class="font-weight-bold h5 text-primary"><?php echo number_format($total, 2); ?> $</td>
+                                <td colspan="2" class="font-weight-bold h5 text-primary">
+                                    <?php echo number_format($total, 2); ?> $
+                                </td>
                             </tr>
                         </tfoot>
                     </table>
+
                     <div class="d-flex justify-content-end mt-4">
                         <a href="vaciar.php" class="btn btn-outline-danger mr-2">Limpiar Cartera</a>
                         <a href="pagar.php" class="btn btn-primary btn-lg px-5">Ejecutar Inversión</a>
