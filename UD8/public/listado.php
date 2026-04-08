@@ -44,8 +44,104 @@ if (isset($_POST['comprar'])) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --card-dark: rgba(30, 41, 59, 0.8);
+            --accent-blue: #38bdf8;
+            --stock-green: #22c55e;
+        }
 
+        body {
+            background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.92)), url('../img/Captura.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(2, 6, 23, 0.9) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .glass-container {
+            background: var(--card-dark);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-control-lg {
+            background: rgba(15, 23, 42, 0.9) !important;
+            border: 1px solid #334155;
+            color: white !important;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .form-control-lg:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
+        }
+
+        #menu-sugerencias {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            top: 100%;
+            left: 0;
+            background: #1e293b;
+            border: 1px solid var(--accent-blue);
+            border-radius: 8px;
+            display: none;
+            overflow: hidden;
+        }
+
+        .sugerencia-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #334155;
+            transition: 0.2s;
+        }
+
+        .sugerencia-item:hover,
+        .sugerencia-item.active {
+            background: var(--accent-blue);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .stock-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--accent-blue);
+            border-radius: 20px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .price-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 4rem;
+            color: var(--accent-blue);
+        }
+    </style>
 </head>
 
 <body>

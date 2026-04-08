@@ -1,7 +1,7 @@
 <?php
 session_start();
-if (!isset($_SESSION['nombre']) || !isset($_GET['id'])) {
-    header('Location:listado.php');
+if (!isset($_SESSION['nombre'])) {
+    header('Location:login.php');
     exit();
 }
 
@@ -9,9 +9,16 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use jrosalessueiro\Tarea8\StockService;
 
-$id = $_GET['id'];
 $service = new StockService();
-$info = $service->consultar($id);
+$datos = null;
+
+// Importante: listado.php envía el parámetro como 'id'
+$simbolo = $_GET['id'] ?? null;
+
+if ($simbolo) {
+    // Llamamos al servicio (asegúrate de que el método se llame consultar)
+    $datos = $service->consultar(trim($simbolo));
+}
 ?>
 <!doctype html>
 <html lang="es">
@@ -20,31 +27,67 @@ $info = $service->consultar($id);
     <meta charset="UTF-8">
     <title>Detalles de <?php echo $id; ?></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.92)),
+                url('../img/Captura.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .card,
+        .glass-container {
+            background: rgba(30, 41, 59, 0.9) !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 20px !important;
+            color: white !important;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
     <div class="container mt-5">
-        <div class="card shadow mx-auto" style="max-width: 500px;">
-            <div class="card-header bg-info text-white text-center">
-                <h3>Detalles de Activo: <?php echo $id; ?></h3>
+        <div class="card glass-container shadow mx-auto" style="max-width: 600px;">
+            <div class="card-header border-0 bg-transparent text-center">
+                <h3 class="font-weight-bold text-white">DETALLE DEL ACTIVO</h3>
             </div>
+
             <div class="card-body">
-                <?php if ($info): ?>
+                <?php if ($datos && isset($datos['simbolo'])): ?>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Símbolo:</strong> <?php echo $info['simbolo']; ?></li>
-                        <li class="list-group-item"><strong>Precio Actual:</strong> <?php echo number_format($info['precio'], 2); ?> $</li>
-                        <li class="list-group-item"><strong>Variación:</strong> <?php echo $info['cambio']; ?></li>
-                        <li class="list-group-item text-muted small text-right">Datos obtenidos via Alpha Vantage API</li>
+                        <li class="list-group-item bg-transparent text-white d-flex justify-content-between border-secondary">
+                            <strong>Símbolo:</strong>
+                            <span class="text-info font-weight-bold"><?php echo htmlspecialchars($datos['simbolo']); ?></span>
+                        </li>
+                        <li class="list-group-item bg-transparent text-white d-flex justify-content-between border-secondary">
+                            <strong>Precio Actual:</strong>
+                            <span class="font-weight-bold"><?php echo number_format($datos['precio'], 2); ?> $</span>
+                        </li>
+                        <li class="list-group-item bg-transparent text-white d-flex justify-content-between border-secondary">
+                            <strong>Último Cambio:</strong>
+                            <span class="<?php echo (strpos($datos['cambio'], '-') !== false) ? 'text-danger' : 'text-success'; ?>">
+                                <?php echo htmlspecialchars($datos['cambio']); ?>
+                            </span>
+                        </li>
                     </ul>
                 <?php else: ?>
-                    <p class="text-danger">No se pudo recuperar la información en este momento.</p>
+                    <div class="text-center py-4">
+                        <i class="fas fa-search mb-3" style="font-size: 2rem; opacity: 0.5;"></i>
+                        <p>No hay detalles disponibles para el símbolo: <strong><?php echo htmlspecialchars($simbolo); ?></strong></p>
+                    </div>
                 <?php endif; ?>
-                <div class="mt-4">
-                    <a href="cesta.php" class="btn btn-secondary btn-block">Volver a mi Cartera</a>
-                </div>
+            </div>
+
+            <div class="card-footer bg-transparent border-0 text-center">
+                <small class="text-muted">Datos obtenidos via Alpha Vantage API</small>
+                <br>
+                <a href="listado.php" class="btn btn-outline-info mt-3 px-4">
+                    <i class="fas fa-arrow-left"></i> Volver al Terminal
+                </a>
             </div>
         </div>
     </div>

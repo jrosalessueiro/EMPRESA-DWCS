@@ -10,14 +10,56 @@ if (!isset($_SESSION['nombre'])) {
 
 <head>
     <meta charset="UTF-8">
-    <title>StockMaster - Mi Cartera de valores</title>
+    <title>StockMaster - Mi Cartera</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --card-dark: rgba(30, 41, 59, 0.8);
+            --accent-blue: #38bdf8;
+        }
+
+        body {
+            background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.92)),
+                url('../img/Captura.jpg');
+            /* Misma ruta que en listado */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Esto es lo que le da el toque de cristal a las tarjetas de la cesta y detalles */
+        .glass-container,
+        .card {
+            background: var(--card-dark) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+            color: white !important;
+        }
+
+        /* Para que las tablas de la cesta se vean bien */
+        .table {
+            color: white !important;
+        }
+
+        .btn-info {
+            background-color: var(--accent-blue) !important;
+            border: none;
+            color: #020617 !important;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
-<body style="background: #e9ecef">
+<body>
     <div class="container mt-5">
         <div class="card shadow-lg border-0">
             <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">

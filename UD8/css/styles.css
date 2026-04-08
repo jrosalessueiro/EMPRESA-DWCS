@@ -1,0 +1,108 @@
+/* --- VARIABLES GLOBALES --- */
+:root {
+  --bg-dark: #020617;
+  --card-dark: rgba(30, 41, 59, 0.8);
+  --accent-blue: #38bdf8;
+  --stock-green: #22c55e;
+  --stock-red: #ef4444;
+}
+
+/* --- ESTILO BASE --- */
+body {
+  background:
+    linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.92)),
+    url("../img/captura.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  color: #f1f5f9;
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+}
+
+/* --- CONTENEDORES --- */
+.glass-container,
+.card {
+  background: var(--card-dark) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  color: white !important;
+}
+
+/* --- BUSCADOR (CORREGIDO) --- */
+/* Usamos selectores más específicos para ganar a Bootstrap */
+input#buscador.form-control.form-control-lg {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid #334155 !important;
+  color: white !important;
+  border-radius: 12px !important;
+  height: 60px !important; /* Corregido: antes había un espacio en '1.5 em' que rompía el CSS */
+}
+
+input#buscador.form-control.form-control-lg::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+input#buscador.form-control.form-control-lg:focus {
+  background: rgba(15, 23, 42, 1) !important;
+  border-color: var(--accent-blue) !important;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2) !important;
+}
+
+/* BOTÓN CONSULTAR */
+.btn-info.btn-lg {
+  background-color: var(--accent-blue) !important;
+  border: none !important;
+  color: #020617 !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  height: 60px !important;
+  display: flex;
+  align-items: center;
+}
+
+/* --- OTROS ELEMENTOS --- */
+.navbar {
+  background: rgba(2, 6, 23, 0.9) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #1e293b;
+}
+
+.stock-card {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid var(--accent-blue) !important;
+  border-radius: 20px !important;
+}
+
+.price-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 3.5rem;
+  color: var(--accent-blue);
+}
+
+#menu-sugerencias {
+  position: absolute;
+  z-index: 1000;
+  width: 100%;
+  top: 100%;
+  background: #1e293b;
+  border: 1px solid var(--accent-blue);
+  border-radius: 8px;
+  display: none;
+  overflow: hidden;
+}
+
+.sugerencia-item {
+  padding: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #334155;
+  color: white;
+}
+
+.sugerencia-item:hover,
+.sugerencia-item.active {
+  background: var(--accent-blue);
+  color: #000;
+}
