@@ -1,5 +1,6 @@
 <?php
+// public/vaciar.php
 session_start();
 unset($_SESSION['cesta']);
-header('Location: listado.php');
+header('Location: cesta.php');
 exit();

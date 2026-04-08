@@ -10,9 +10,11 @@ if (!isset($_SESSION['nombre'])) {
 
 <head>
     <meta charset="UTF-8">
-    <title>StockMaster - Mi Cartera</title>
+    <title>StockMaster - Mi Cartera de valores</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body style="background: #e9ecef">
