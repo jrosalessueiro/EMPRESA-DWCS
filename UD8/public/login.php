@@ -88,7 +88,6 @@ if (isset($_POST['login'])) {
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="row justify-content-center">
@@ -102,7 +101,13 @@ if (isset($_POST['login'])) {
                     <?php if ($error): ?>
                         <div class="alert alert-danger py-2 text-center small"><?php echo $error; ?></div>
                     <?php endif; ?>
-
+                    <!-- HTML para mostrar el clima -->
+                    <div style="padding:15px; border:1px solid #ccc; margin-bottom:20px;">
+                        <h3>Clima actual</h3>
+                        <button id="btnWeather">Mostrar clima</button>
+                        <div id="weatherResult" style="margin-top:10px;"></div>
+                    </div>
+                    
                     <form action="login.php" method="POST">
                         <div class="form-group">
                             <label>Usuario</label>
@@ -118,6 +123,34 @@ if (isset($_POST['login'])) {
             </div>
         </div>
     </div>
+   <!-- Se añade Script para llamar a tu WeatherAPI.php -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            document.getElementById("btnWeather").addEventListener("click", function() {
+                fetch("../src/WeatherAPIEndpoint.php")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            document.getElementById("weatherResult").innerHTML = "Error: " + data.error;
+                            return;
+                        }
+
+                        const weather = data.current_weather;
+
+                        document.getElementById("weatherResult").innerHTML =
+                            "<strong>Temperatura:</strong> " + weather.temperature + "°C<br>" +
+                            "<strong>Viento:</strong> " + weather.windspeed + " km/h<br>" +
+                            "<strong>Dirección:</strong> " + weather.winddirection + "°";
+                    })
+                    .catch(error => {
+                        document.getElementById("weatherResult").innerHTML = "Error al obtener el clima.";
+                    });
+            });
+
+        });
+</script>
+
 </body>
 
 </html>

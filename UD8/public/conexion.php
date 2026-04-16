@@ -7,7 +7,7 @@ $pass = "secreto";
 
 // DSN (Data Source Name): Cadena de conexión que indica el driver, host, base de datos y el set de caracteres
 // Usamos utf8mb4 para asegurar que emojis o caracteres especiales no den problemas
-$dsn  = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+$dsn = "mysql:host=localhost;port=3307;dbname=tarea06;charset=utf8mb4";
 
 try {
     // Creamos la instancia de la clase PDO para establecer la conexión activa.
