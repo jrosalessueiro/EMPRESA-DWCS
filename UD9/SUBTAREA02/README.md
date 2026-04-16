@@ -1,8 +1,8 @@
 # José Rosales Sueiro DWCS 2026
 
-# Subtarea 02: Registro de Usuarios con Laravel Breeze
+# Subtarea 02: Área de cliente con Laravel Breeze
 
-Este proyecto implementa un sistema de autenticación completo (Login/Register) utilizando el paquete oficial Laravel Breeze.
+Este proyecto implementa un Dashboard, sistema de autenticación completo (Login/Register), utilizando el paquete oficial Laravel Breeze.
 
 ## Tecnologías utilizadas
 
@@ -23,6 +23,11 @@ Este proyecto implementa un sistema de autenticación completo (Login/Register) 
 - **/register**: Formulario de registro.
 - **/login**: Formulario de acceso.
 - **/dashboard**: Zona privada tras el registro.
+
+1. Autenticación: El sistema comprueba si el usuario tiene una "cookie" de sesión válida en su navegador.
+2. El Guardián (Middleware): Laravel y Symfony revisan cada petición. Si intenta entrar a /dashboard sin estar logueado, te expulsa y te manda de vuelta al Login.
+3. Identificación: Una vez dentro, la aplicación ha ido a la base de datos a buscar tus datos usando el ID de tu sesión.
+4. Funcionalidad: En esta área es donde se podrían ver los contenidos del usuario.
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
