@@ -1,3 +1,29 @@
+# José Rosales Sueiro DWCS 2026
+
+# Subtarea 02: Registro de Usuarios con Laravel Breeze
+
+Este proyecto implementa un sistema de autenticación completo (Login/Register) utilizando el paquete oficial Laravel Breeze.
+
+## Tecnologías utilizadas
+
+- **Framework:** Laravel 10.x / 11.x
+- **Starter Kit:** Laravel Breeze (Blade stack)
+- **Base de Datos:** SQLite (archivo `database/database.sqlite`)
+
+## Pasos para ejecutar el proyecto
+
+1. Instalar dependencias: `composer install`
+2. Configurar entorno: `cp .env.example .env` (y configurar DB_CONNECTION=sqlite)
+3. Generar clave: `php artisan key:generate`
+4. Ejecutar migraciones: `php artisan migrate`
+5. Iniciar servidor: `php artisan serve`
+
+## Rutas principales
+
+- **/register**: Formulario de registro.
+- **/login**: Formulario de acceso.
+- **/dashboard**: Zona privada tras el registro.
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
