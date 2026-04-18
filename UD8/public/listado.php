@@ -2,6 +2,27 @@
 // Iniciamos sesión para saber quién es el usuario y manejar su cesta
 session_start();
 
+//archivos necesario TwitchApi
+require_once __DIR__ . '/../src/TwitchApi.php';
+$claves = require_once __DIR__ . '/../claves.php';
+
+$canales = [];
+if(isset($_POST['verCanal'])){
+    //creamos un objeto a partir de las credenciales de twitch
+    $api = new TwitchApi($claves['client_id'], $claves['client_secret']);
+    $token = $api->getAccessToken();
+
+    if($token) {
+        $catId = $api->getCategoryId();
+
+        if($catId){
+            $canales = $api->getCanales($catId);
+        } else {
+            echo "<p>No se encontraron canalesd online de la categoría 'Crypto'.</p>";
+        }
+    }
+}
+
 // Control de seguridad: Si no se ha logueado, lo mandamos de vuelta al login
 if (!isset($_SESSION['nombre'])) {
     header('Location:login.php');
@@ -64,7 +85,7 @@ if (isset($_POST['comprar'])) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <style>
         :root {
             --bg-dark: #020617;
@@ -143,6 +164,20 @@ if (isset($_POST['comprar'])) {
             font-size: 4rem;
             color: var(--accent-blue);
         }
+
+        .cajaClips{
+            margin-top: 26px; 
+            display:flex; 
+            flex-direction: row; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+
+        }
+
+        iframe{
+            max-width: 100%;
+        }
+
     </style>
 </head>
 
@@ -282,6 +317,56 @@ if (isset($_POST['comprar'])) {
             if (indexSeleccionado > -1) items[indexSeleccionado].classList.add('active');
         }
     </script>
+
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <hr>
+            <form action="listado.php" method="POST" class="mt-2 mb-4">
+                <button name="verCanal" type="submit" class="btn btn-purple mt-4 btClips" style="background-color: #9146FF; color: white; border-radius: 16px; margin-left: 8px;">
+                    Ver Canales de Twitch
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <?php
+    if(!empty($canales)){
+    ?>
+        
+        <div class="row cajaClips">
+            <?php foreach($canales as $canal){ ?>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm" style='border-radius:12px; overflow: hidden;' >
+                        <div class="ratio ratio-16x9" style="width: 100%; height: 100%; object-fit: cover;">
+                            <!--
+                            Necesitamos usar el '&parent=localhost' para indicar donde vamos a usar el clip 
+                            link para saber como incluir streams en directo: https://dev.twitch.tv/docs/embed/video-and-clips/ 
+                            -->
+                            <iframe 
+                                src="https://player.twitch.tv/?channel=<?php echo $canal['user_login']; ?>&parent=localhost&autoplay=false&muted=true" 
+                                height="400"
+                                width="100%"
+                                allowfullscreen
+                                >
+                            </iframe>
+                        </div>
+
+                        <!--
+                        El array 'clips' está formado por pares clave-valor
+                        Accedemos a cada clave para conseguir los valores de interes
+                        -->
+                        <div class="card-body text-center" >
+                            <h4><?php echo $canal['title'] ?></h4>
+                        </div>
+                    </div>               
+                </div>
+            <?php } ?>
+        </div>
+    <?php
+    }
+    ?>
+
 </body>
 
 </html>

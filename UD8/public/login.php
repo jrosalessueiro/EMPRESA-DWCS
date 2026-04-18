@@ -29,7 +29,7 @@ if (isset($_POST['login'])) {
              * * 3. El resultado ($row): Obtenemos los datos de forma segura.. */
 
             // Definimos la plantilla con el marcador :u
-            $sql = "SELECT nombre, password FROM usuarios WHERE usuario = :u";
+            $sql = "SELECT usuario, pass FROM usuarios WHERE usuario = :u";
             // Preparamos la consulta en el servidor de BD
             $stmt = $conProyecto->prepare($sql);
             // Ejecutamos pasando el valor real que limpia el marcador
@@ -42,9 +42,9 @@ if (isset($_POST['login'])) {
              * Comprobamos si el usuario existe y si la contraseña coincide.
              * Si usasemos password_hash() en el registro, aquí usaríamos password_verify().
              */
-            if ($row && $password === $row['password']) {
+            if ($row && $password === $row['pass']) {
                 // ÉXITO: Guardamos datos en la sesión para identificar al usuario en otras páginas
-                $_SESSION['nombre'] = $row['nombre'];
+                $_SESSION['nombre'] = $row['usuario'];
                 $_SESSION['cesta'] = []; // Inicializamos la cartera vacía para el nuevo usuario
 
                 // Redirigimos al terminal principal
