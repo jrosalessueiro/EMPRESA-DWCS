@@ -1,0 +1,9 @@
+titulo.registro: "Formulario de Rexistro"
+campo.email: "Correo electrónico"
+campo.nombre: "Nome"
+campo.apellidos: "Apelidos"
+campo.password: "Contrasinal"
+boton.registrar: "Crear conta"
+# Novas claves para o CRUD:
+titulo.lista_usuarios: "Listaxe de Usuarios"
+mensaje.sin_registros: "Non se atoparon rexistros na base de datos"

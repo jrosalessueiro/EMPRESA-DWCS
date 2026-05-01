@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User index{% endblock %}
+
+{% block body %}
+    <h1>{{ 'titulo.lista_usuarios'|trans }}</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{{ 'campo.nombre'|trans }}</th>
+                <th>{{ 'campo.apellidos'|trans }}</th>
+                <th>{{ 'campo.id'|trans }}</th>
+                <th>{{ 'campo.email'|trans }}</th>
+                <th>{{ 'campo.roles'|trans }}</th>
+                <th>{{ 'campo.password'|trans }}</th>
+                <th>{{ 'campo.actions'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.nombre }}</td>
+                <td>{{ user.apellidos }}</td>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>{{ user.password }}</td>
+                <td>
+                    <a href="{{ path('app_user_show', {'nombre': user.nombre}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'nombre': user.nombre}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">{{ 'mensaje.sin_registros'|trans }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_user_new') }}">Create new</a>
+{% endblock %}

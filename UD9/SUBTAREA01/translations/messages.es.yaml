@@ -1,0 +1,9 @@
+titulo.registro: "Formulario de Registro"
+campo.email: "Correo electrónico"
+campo.nombre: "Nombre"
+campo.apellidos: "Apellidos"
+campo.password: "Contraseña"
+boton.registrar: "Crear cuenta"
+# Nuevas claves para el CRUD:
+titulo.lista_usuarios: "Listado de Usuarios"
+mensaje.sin_registros: "No se han encontrado registros en la base de datos"
